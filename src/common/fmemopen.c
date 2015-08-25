@@ -3,7 +3,6 @@
        http://gitweb.dragonflybsd.org/dragonfly.git/blob_plain/HEAD:/lib/libc/stdio/fmemopen.c
     on 26/04/2013 by Abel Luck for inclusion in tlsdate for the Android port.
 */
-#include "android.h"
 /* $NetBSD: fmemopen.c,v 1.4 2010/09/27 16:50:13 tnozaki Exp $ */
 
 /*-
@@ -43,6 +42,10 @@
 
 //#include "local.h"
 //#include "priv_stdio.h"
+
+int MIN(int a, int b) {
+    return a < b ? a : b;
+}
 
 struct fmemopen_cookie {
     char *head, *tail, *cur, *eob;
