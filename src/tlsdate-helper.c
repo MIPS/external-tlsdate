@@ -305,7 +305,7 @@ handle_date_line(const char *dateline, uint32_t *result)
   tm.tm_sec = sec;
 
   t = timegm(&tm);
-  if (t > 0xffffffff || t < 0)
+  if (t > ((time_t) 0xffffffff) || t < 0)
     return -1;
 
   *result = (uint32_t) t;
@@ -318,7 +318,7 @@ read_http_date_from_bio(BIO *bio, uint32_t *result)
 {
   int n;
   char buf[MAX_HTTP_HEADERS_SIZE];
-  int buf_len=0;
+  size_t buf_len=0;
   char *dateline, *endofline;
 
   while (buf_len < sizeof(buf)-1) {
@@ -712,7 +712,7 @@ check_san (SSL *ssl, const char *hostname)
         if (method->i2v)
         {
           val = method->i2v(method, extvalstr, NULL);
-          for (j = 0; j < sk_CONF_VALUE_num(val); ++j)
+          for (j = 0; ((size_t) j) < sk_CONF_VALUE_num(val); ++j)
           {
             nval = sk_CONF_VALUE_value(val, j);
             if ((!strcasecmp(nval->name, "DNS") &&

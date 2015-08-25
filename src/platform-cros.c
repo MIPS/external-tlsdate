@@ -130,7 +130,7 @@ void
 canonicalize_pac (const char *pac_fmt, char *proxy_url, size_t len)
 {
   size_t type_len;
-  size_t copied = 0;
+  int copied = 0;
   const char *space;
   /* host[255]:port[6]\0 */
   char hostport[6 + 255 + 2];
@@ -172,7 +172,7 @@ canonicalize_pac (const char *pac_fmt, char *proxy_url, size_t len)
     {
       error ("pac_fmt unmatched: '%s' %zu", pac_fmt, type_len);
     }
-  if (copied >= len)
+  if (copied < 0 || ((size_t) copied) >= len)
     {
       error ("canonicalize_pac: truncation '%s'", proxy_url);
       proxy_url[0] = '\0';
@@ -306,7 +306,7 @@ handle_proxy_change (DBusConnection *connection,
   /* Make sure this was the resolution we asked for */
   url_len = snprintf (time_host, sizeof (time_host), "https://%s:%s",
                       src->host, src->port);
-  if (url_len >= sizeof (time_host))
+  if (url_len < 0 || ((size_t) url_len) >= sizeof (time_host))
     {
       error ("[event:cros:%s]: current source url is too long",
              __func__);
@@ -477,7 +477,7 @@ add_match (DBusConnection *conn, const char *interface, const char *member,
       len = snprintf (match, sizeof (match), kMatchNoArgFormat,
                       interface, member);
     }
-  if (len >= sizeof (match) || len < 0)
+  if (len < 0 || ((size_t) len) >= sizeof (match))
     {
       error ("[dbus] match truncated for '%s,%s'", interface, member);
       return 1;
@@ -515,7 +515,7 @@ new_resolver_message(const struct source *src)
   /* Build the time_host */
   url_len = snprintf (time_host, sizeof (time_host), "https://%s:%s",
                       src->host, src->port);
-  if (url_len >= sizeof (time_host))
+  if (url_len < 0 || ((size_t) url_len) >= sizeof (time_host))
     {
       fatal ("[cros] source %d url is too long! (%d)", src->id, url_len);
     }

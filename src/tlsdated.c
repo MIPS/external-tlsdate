@@ -394,8 +394,9 @@ check_conf (struct state *state)
     fatal ("-d argument must be nonzero");
   if (!opts->steady_state_interval)
     fatal ("-a argument must be nonzero");
-  if (snprintf (state->timestamp_path, sizeof (state->timestamp_path),
-                "%s/timestamp", opts->base_path) >= sizeof (state->timestamp_path))
+  int ret = snprintf (state->timestamp_path, sizeof (state->timestamp_path),
+		      "%s/timestamp", opts->base_path);
+  if (ret < 0 || ((size_t) ret) >= sizeof (state->timestamp_path))
     fatal ("supplied base path is too long: '%s'", opts->base_path);
   if (opts->jitter >= opts->steady_state_interval)
     fatal ("jitter must be less than steady state interval (%d >= %d)",
