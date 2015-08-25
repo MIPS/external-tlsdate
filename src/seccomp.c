@@ -72,7 +72,7 @@ enable_setter_seccomp (void)
     /* Process ALLOWs as quickly as possible */
     SC_ALLOW (read),
     SC_ALLOW (write),
-    SC_ALLOW (pwritev),
+    SC_ALLOW (pwrite64),
 
     SC_ALLOW (settimeofday),
     SC_ALLOW (ioctl), /* TODO(wad) filter for fd and RTC_SET_TIME */
