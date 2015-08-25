@@ -120,8 +120,8 @@ void no_new_privs(void)
   // This happens in tlsdated earlier than when tlsdate-helper drops
   // privileges.
   if (0 == prctl (PR_GET_NO_NEW_PRIVS)) {
-    // Remove the ability to regain privilegess
-    if (0 != prctl (PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
+    // Remove the ability to regain privileges.
+    if (0 != prctl (PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
       die ("Failed to PR_SET_NO_NEW_PRIVS");
   } else {
     verb ("V: Parent process has already set PR_SET_NO_NEW_PRIVS");
