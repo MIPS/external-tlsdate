@@ -388,6 +388,44 @@ openssl_time_callback (const SSL* ssl, int where, int ret)
   }
 }
 
+static const char *
+key_type_to_str (int key_type)
+{
+  switch (key_type)
+  {
+    case EVP_PKEY_RSA:
+      return "EVP_PKEY_RSA";
+    case EVP_PKEY_RSA2:
+      return "EVP_PKEY_RSA2";
+    case EVP_PKEY_DSA:
+      return "EVP_PKEY_DSA";
+#if defined(EVP_PKEY_DSA1)
+    case EVP_PKEY_DSA1:
+      return "EVP_PKEY_DSA1";
+#endif  /* EVP_PKEY_DSA1 */
+#if defined(EVP_PKEY_DSA2)
+    case EVP_PKEY_DSA2:
+      return "EVP_PKEY_DSA2";
+#endif  /* EVP_PKEY_DSA2 */
+#if defined(EVP_PKEY_DSA3)
+    case EVP_PKEY_DSA3:
+      return "EVP_PKEY_DSA3";
+#endif  /* EVP_PKEY_DSA3 */
+#if defined(EVP_PKEY_DSA4)
+    case EVP_PKEY_DSA4:
+      return "EVP_PKEY_DSA4";
+#endif  /* EVP_PKEY_DSA4 */
+    case EVP_PKEY_DH:
+      return "EVP_PKEY_DH";
+    case EVP_PKEY_EC:
+      return "EVP_PKEY_EC";
+    // Should we also care about EVP_PKEY_HMAC and EVP_PKEY_CMAC?
+    default:
+      return NULL;
+  }
+  return NULL;
+}
+
 uint32_t
 get_certificate_keybits (EVP_PKEY *public_key)
 {
@@ -395,50 +433,17 @@ get_certificate_keybits (EVP_PKEY *public_key)
     In theory, we could use check_bitlen_dsa() and check_bitlen_rsa()
    */
   uint32_t key_bits;
-  switch (public_key->type)
-  {
-    case EVP_PKEY_RSA:
-      verb("V: key type: EVP_PKEY_RSA");
-      key_bits = BN_num_bits(public_key->pkey.rsa->n);
-      break;
-    case EVP_PKEY_RSA2:
-      verb("V: key type: EVP_PKEY_RSA2");
-      key_bits = BN_num_bits(public_key->pkey.rsa->n);
-      break;
-    case EVP_PKEY_DSA:
-      verb("V: key type: EVP_PKEY_DSA");
-      key_bits = BN_num_bits(public_key->pkey.dsa->p);
-      break;
-    case EVP_PKEY_DSA1:
-      verb("V: key type: EVP_PKEY_DSA1");
-      key_bits = BN_num_bits(public_key->pkey.dsa->p);
-      break;
-    case EVP_PKEY_DSA2:
-      verb("V: key type: EVP_PKEY_DSA2");
-      key_bits = BN_num_bits(public_key->pkey.dsa->p);
-      break;
-    case EVP_PKEY_DSA3:
-      verb("V: key type: EVP_PKEY_DSA3");
-      key_bits = BN_num_bits(public_key->pkey.dsa->p);
-      break;
-    case EVP_PKEY_DSA4:
-      verb("V: key type: EVP_PKEY_DSA4");
-      key_bits = BN_num_bits(public_key->pkey.dsa->p);
-      break;
-    case EVP_PKEY_DH:
-      verb("V: key type: EVP_PKEY_DH");
-      key_bits = BN_num_bits(public_key->pkey.dh->pub_key);
-      break;
-    case EVP_PKEY_EC:
-      verb("V: key type: EVP_PKEY_EC");
-      key_bits = EVP_PKEY_bits(public_key);
-      break;
-    // Should we also care about EVP_PKEY_HMAC and EVP_PKEY_CMAC?
-    default:
-      key_bits = 0;
-      die ("unknown public key type");
-      break;
-  }
+  const char *key_type_str;
+
+  key_type_str = key_type_to_str(public_key->type);
+  if (key_type_str)
+    verb("V: key type: %s", key_type_str);
+  else
+    verb("V: key type: %d", public_key->type);
+
+  key_bits = EVP_PKEY_bits(public_key);
+  if (0 == key_bits)
+    die ("unknown public key type");
   verb ("V: keybits: %d", key_bits);
   return key_bits;
 }
