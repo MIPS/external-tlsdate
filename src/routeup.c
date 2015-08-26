@@ -73,10 +73,12 @@ int API
 routeup_process (struct routeup *rtc)
 {
   char buf[4096];
-  ssize_t sz;
+  ssize_t ret;
+  size_t sz;
   struct nlmsghdr *nh;
-  if ( (sz = read (rtc->netlinkfd, buf, sizeof (buf))) < 0)
+  if ( (ret = read (rtc->netlinkfd, buf, sizeof (buf))) < 0)
     return -1;
+  sz = (size_t) ret;
   for (nh = (struct nlmsghdr *) buf; NLMSG_OK (nh, sz);
        nh = NLMSG_NEXT (nh, sz))
     {
