@@ -348,9 +348,11 @@ long proxy_ctrl (BIO *b, int cmd, long num, void *ptr)
       ret = BIO_ctrl (b->next_bio, cmd, num, ptr);
       BIO_copy_next_retry (b);
       break;
+#if defined(BIO_CTRL_DUP)
     case BIO_CTRL_DUP:
       ret = 0;
       break;
+#endif  /* BIO_CTRL_DUP */
     default:
       ret = BIO_ctrl (b->next_bio, cmd, num, ptr);
     }
