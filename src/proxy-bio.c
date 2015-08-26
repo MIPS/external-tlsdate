@@ -367,7 +367,7 @@ int proxy_puts (BIO *b, const char *str)
   return BIO_puts (b->next_bio, str);
 }
 
-long proxy_callback_ctrl (BIO *b, int cmd, bio_info_cb *fp)
+long proxy_callback_ctrl (BIO *b, int cmd, bio_info_cb fp)
 {
   if (!b->next_bio)
     return 0;
