@@ -48,6 +48,14 @@
 #   define EM_ARM 40
 # endif
 #  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_ARM
+#elif defined(__aarch64__)
+#  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_AARCH64
+#elif defined(__mips__)
+# if defined(__LP64__)
+#  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS64
+# else
+#  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS
+# endif
 #else
 #  error "Platform does not support seccomp filter yet"
 #endif
