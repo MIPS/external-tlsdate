@@ -179,30 +179,14 @@ setup_proxy(BIO *ssl)
   BIO_push(ssl, bio);
 }
 
-static BIO *
-make_ssl_bio(SSL_CTX *ctx)
-{
-  BIO *con = NULL;
-  BIO *ssl = NULL;
-
-  if (!(con = BIO_new(BIO_s_connect())))
-    die("BIO_s_connect failed");
-  if (!(ssl = BIO_new_ssl(ctx, 1)))
-    die("BIO_new_ssl failed");
-  setup_proxy(ssl);
-  BIO_push(ssl, con);
-  return ssl;
-}
-
-
 static int
-write_all_to_bio(BIO *bio, const char *string)
+write_all_to_ssl(SSL *ssl, const char *string)
 {
   int n = (int) strlen(string);
   int r;
 
   while (n) {
-    r = BIO_write(bio, string, n);
+    r = SSL_write(ssl, string, n);
     if (r > 0) {
       if (r > n)
         return -1;
@@ -314,7 +298,7 @@ handle_date_line(const char *dateline, uint32_t *result)
 }
 
 static int
-read_http_date_from_bio(BIO *bio, uint32_t *result)
+read_http_date_from_ssl(SSL *ssl, uint32_t *result)
 {
   int n;
   char buf[MAX_HTTP_HEADERS_SIZE];
@@ -322,7 +306,7 @@ read_http_date_from_bio(BIO *bio, uint32_t *result)
   char *dateline, *endofline;
 
   while (buf_len < sizeof(buf)-1) {
-    n = BIO_read(bio, buf+buf_len, sizeof(buf)-buf_len-1);
+    n = SSL_read(ssl, buf+buf_len, sizeof(buf)-buf_len-1);
     if (n <= 0)
       return 0;
     buf_len += n;
@@ -1175,11 +1159,12 @@ run_ssl (uint32_t *time_map, int time_is_an_illusion, int http)
     }
   }
 
-  if (NULL == (s_bio = make_ssl_bio(ctx)))
-    die ("SSL BIO setup failed");
-  BIO_get_ssl(s_bio, &ssl);
-  if (NULL == ssl)
+  if (NULL == (s_bio = BIO_new(BIO_s_connect())))
+    die ("connect BIO setup failed");
+  setup_proxy(s_bio);
+  if (NULL == (ssl = SSL_new(ctx)))
     die ("SSL setup failed");
+  SSL_set_bio(ssl, s_bio, s_bio);
 
   if (time_is_an_illusion)
   {
@@ -1197,10 +1182,8 @@ run_ssl (uint32_t *time_map, int time_is_an_illusion, int http)
 
   // This should run in seccomp
   // eg:     prctl(PR_SET_SECCOMP, 1);
-  if (1 != BIO_do_connect(s_bio)) // XXX TODO: BIO_should_retry() later?
+  if (1 != SSL_connect(ssl))
     die ("SSL connection failed");
-  if (1 != BIO_do_handshake(s_bio))
-    die ("SSL handshake failed");
 
   // from /usr/include/openssl/ssl3.h
   //  ssl->s3->server_random is an unsigned char of 32 bits
@@ -1215,10 +1198,10 @@ run_ssl (uint32_t *time_map, int time_is_an_illusion, int http)
       die("hostname too long");
     buf[1023]='\0'; /* Unneeded. */
     verb_debug ("V: Writing HTTP request");
-    if (1 != write_all_to_bio(s_bio, buf))
+    if (1 != write_all_to_ssl(ssl, buf))
       die ("write all to bio failed.");
     verb_debug ("V: Reading HTTP response");
-    if (1 != read_http_date_from_bio(s_bio, &result_time))
+    if (1 != read_http_date_from_ssl(ssl, &result_time))
       die ("read all from bio failed.");
     verb ("V: Received HTTP response. T=%lu", (unsigned long)result_time);
 
