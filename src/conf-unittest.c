@@ -15,10 +15,6 @@
 #include "src/conf.h"
 #include "src/test_harness.h"
 
-#ifdef HAVE_ANDROID_SYSTEM
-#include "src/common/fmemopen.h"
-#endif
-
 #ifndef HAVE_FMEMOPEN
 #include "src/common/fmemopen.h"
 #endif
