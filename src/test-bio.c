@@ -109,7 +109,7 @@ long test_ctrl (BIO *b, int cmd, long num, void *ptr)
   return 0;
 }
 
-long test_callback_ctrl (BIO *b, int cmd, bio_info_cb *fp)
+long test_callback_ctrl (BIO *b, int cmd, bio_info_cb fp)
 {
   return 0;
 }
