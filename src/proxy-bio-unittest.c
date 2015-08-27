@@ -128,7 +128,7 @@ TEST_F (test_bio, socks4a_success)
                                 sizeof (kSocks4ARequest)));
   EXPECT_EQ (0, need_out_bytes (self->test, kTestInput,
                                 sizeof (kTestInput)));
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 TEST_F (test_bio, socks4a_fail)
@@ -148,7 +148,7 @@ TEST_F (test_bio, socks4a_fail)
   EXPECT_EQ (0, need_out_bytes (self->test, kSocks4ARequest,
                                 sizeof (kSocks4ARequest)));
   /* We shouldn't have written any payload */
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 unsigned const char kSocks5AuthRequest[] =
@@ -201,7 +201,7 @@ TEST_F (test_bio, socks5_success)
                                 sizeof (kSocks5ConnectRequest)));
   EXPECT_EQ (0, need_out_bytes (self->test, kTestInput,
                                 sizeof (kTestInput)));
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 TEST_F (test_bio, socks5_auth_fail)
@@ -217,7 +217,7 @@ TEST_F (test_bio, socks5_auth_fail)
   EXPECT_EQ (0, BIO_write (proxy, kTestInput, sizeof (kTestInput)));
   EXPECT_EQ (0, need_out_bytes (self->test, kSocks5AuthRequest,
                                 sizeof (kSocks5AuthRequest)));
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 TEST_F (test_bio, socks5_connect_fail)
@@ -242,7 +242,7 @@ TEST_F (test_bio, socks5_connect_fail)
                                 sizeof (kSocks5AuthRequest)));
   EXPECT_EQ (0, need_out_bytes (self->test, kSocks5ConnectRequest,
                                 sizeof (kSocks5ConnectRequest)));
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 TEST_F (test_bio, http_success)
@@ -265,7 +265,7 @@ TEST_F (test_bio, http_success)
                                 strlen (kConnectRequest)));
   EXPECT_EQ (0, need_out_bytes (self->test, kTestInput,
                                 sizeof (kTestInput)));
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 TEST_F (test_bio, http_error)
@@ -286,7 +286,7 @@ TEST_F (test_bio, http_error)
   EXPECT_EQ (0, need_out_bytes (self->test,
                                 (unsigned char *) kConnectRequest,
                                 strlen (kConnectRequest)));
-  EXPECT_EQ (0, BIO_test_output_left (self->test));
+  EXPECT_EQ (0U, BIO_test_output_left (self->test));
 }
 
 TEST_HARNESS_MAIN
