@@ -88,16 +88,37 @@ enable_setter_seccomp (void)
     SC_ALLOW (time),
 #endif
 
+#ifdef __NR_lseek
     SC_ALLOW (lseek),
+#endif
+#ifdef __NR_llseek
+    SC_ALLOW (llseek),
+#endif
+#ifdef __NR_lseek64
+    SC_ALLOW (lseek64),
+#endif
     SC_ALLOW (close),
     SC_ALLOW (munmap),
 
     SC_ALLOW (exit_group),
     SC_ALLOW (exit),
 
+#ifdef __NR_open
     SC_DENY (open, EINVAL),
+#endif
+#ifdef __NR_openat
+    SC_DENY (openat, EINVAL),
+#endif
     SC_DENY (fcntl, EINVAL),
+#ifdef __NR_fstat
     SC_DENY (fstat, EINVAL),
+#endif
+#ifdef __NR_fstatat
+    SC_DENY (fstatat, EINVAL),
+#endif
+#ifdef __NR_newfstatat
+    SC_DENY (newfstatat, EINVAL),
+#endif
 #ifdef __NR_mmap
     SC_DENY (mmap, EINVAL),
 #endif
