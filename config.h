@@ -246,7 +246,7 @@
 
 /* TODO Reserve proper unprivileged uid/gid for the helper. */
 /* Unprivileged group */
-#define UNPRIV_GROUP "nogroup"
+#define UNPRIV_GROUP "nobody"
 
 /* Unprivileged user */
 #define UNPRIV_USER "nobody"
