@@ -14,6 +14,28 @@
 
 LOCAL_PATH := $(call my-dir)
 
+tlsdate_tlsdated_sources := \
+    src/conf.c \
+    src/dbus.c \
+    src/events/check_continuity.c \
+    src/events/kickoff_time_sync.c \
+    src/events/route_up.c \
+    src/events/run_tlsdate.c \
+    src/events/save.c \
+    src/events/sigchld.c \
+    src/events/sigterm.c \
+    src/events/time_set.c \
+    src/events/tlsdate_status.c \
+    src/platform-cros.c \
+    src/routeup.c \
+    src/seccomp.c \
+    src/tlsdate-monitor.c \
+    src/tlsdate-setter.c \
+    src/tlsdated.c \
+    src/util.c \
+
+tlsdate_common_shared_libs := libcrypto libdbus libevent
+
 define tlsdate_common
   LOCAL_CFLAGS += \
       -DWITH_EVENTS -DHAVE_DBUS -DHAVE_CROS -DHAVE_PV_UIO \
@@ -43,26 +65,18 @@ include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := tlsdated
-LOCAL_SRC_FILES := \
-    src/conf.c \
-    src/dbus.c \
-    src/events/check_continuity.c \
-    src/events/kickoff_time_sync.c \
-    src/events/route_up.c \
-    src/events/run_tlsdate.c \
-    src/events/save.c \
-    src/events/sigchld.c \
-    src/events/sigterm.c \
-    src/events/time_set.c \
-    src/events/tlsdate_status.c \
-    src/platform-cros.c \
-    src/routeup.c \
-    src/seccomp.c \
-    src/tlsdate-monitor.c \
-    src/tlsdate-setter.c \
-    src/tlsdated.c \
-    src/util.c
+LOCAL_SRC_FILES := $(tlsdate_tlsdated_sources)
 LOCAL_CFLAGS := -DTLSDATED_MAIN
-LOCAL_SHARED_LIBRARIES := libcrypto libdbus libevent
+LOCAL_SHARED_LIBRARIES := $(tlsdate_common_shared_libs)
 $(eval $(tlsdate_common))
 include $(BUILD_EXECUTABLE)
+
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := tlsdated_unittest
+LOCAL_SRC_FILES := \
+    src/tlsdated-unittest.c \
+    $(tlsdate_tlsdated_sources)
+LOCAL_SHARED_LIBRARIES := $(tlsdate_common_shared_libs)
+$(eval $(tlsdate_common))
+include $(BUILD_NATIVE_TEST)
