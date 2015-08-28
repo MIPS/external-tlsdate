@@ -65,6 +65,7 @@ include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := tlsdated
+LOCAL_INIT_RC := init/tlsdated.rc
 LOCAL_SRC_FILES := $(tlsdate_tlsdated_sources)
 LOCAL_CFLAGS := -DTLSDATED_MAIN
 LOCAL_SHARED_LIBRARIES := $(tlsdate_common_shared_libs)
@@ -74,7 +75,6 @@ include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := tlsdated_unittest
-LOCAL_INIT_RC := init/init.tlsdated.rc
 LOCAL_SRC_FILES := \
     src/tlsdated-unittest.c \
     $(tlsdate_tlsdated_sources)
