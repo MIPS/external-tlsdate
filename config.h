@@ -244,12 +244,12 @@
 /* Vendor of Target System */
 /* #undef TARGET_VENDOR */
 
-/* TODO Reserve proper unprivileged uid/gid for the helper. */
+/* TODO(b/23651876) Reserve proper unprivileged uid/gid for the helper. */
 /* Unprivileged group */
-#define UNPRIV_GROUP "nobody"
+#define UNPRIV_GROUP "inet"
 
 /* Unprivileged user */
-#define UNPRIV_USER "nobody"
+#define UNPRIV_USER "inet"
 
 /* if PolarSSL is enabled */
 /* #undef USE_POLARSSL */
