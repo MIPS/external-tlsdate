@@ -1,3 +1,4 @@
+# Init file for starting tlsdated on Android.
 service tlsdated /system/bin/tlsdated -v -l -s -- /system/bin/tlsdate -v -C /system/etc/security/cacerts -l
     class main
     # TODO(b/23601841) Use a lesser uid once CAP_SYS_TIME is enabled.
