@@ -1182,9 +1182,6 @@ run_ssl (uint32_t *time_map, int time_is_an_illusion, int http)
        (1 != BIO_set_conn_port(s_bio, port)) )
     die ("Failed to initialize connection to `%s:%s'", host, port);
 
-  if (NULL == BIO_new_fp(stdout, BIO_NOCLOSE))
-    die ("BIO_new_fp returned error, possibly: %s", strerror(errno));
-
   // This should run in seccomp
   // eg:     prctl(PR_SET_SECCOMP, 1);
   if (1 != SSL_connect(ssl))
