@@ -148,33 +148,39 @@ void enable_seccomp(void)
 #endif
 }
 
+static gid_t
+get_unpriv_gid (const char *group)
+{
+  struct group  *gr = getgrnam (group);
+  if (NULL == gr)
+    die ("Failed to obtain GID for `%s'\n", group);
+  if (0 == gr->gr_gid)
+    die ("GID for `%s' is 0, refusing to run SSL\n", group);
+  return gr->gr_gid;
+}
+
 void
-drop_privs_to (const char *user, const char *group)
+drop_privs_to (const char *user, const char *group, const char **supp_groups)
 {
   uid_t uid;
   gid_t gid;
   struct passwd *pw;
-  struct group  *gr;
+  size_t num_supp, i;
 
   if (0 != getuid ())
     return; /* not running as root to begin with; should (!) be harmless to continue
          without dropping to 'nobody' (setting time will fail in the end) */
   pw = getpwnam (user);
-  gr = getgrnam (group);
   if (NULL == pw)
     die ("Failed to obtain UID for `%s'\n", user);
-  if (NULL == gr)
-    die ("Failed to obtain GID for `%s'\n", group);
   uid = pw->pw_uid;
   if (0 == uid)
     die ("UID for `%s' is 0, refusing to run SSL\n", user);
-  gid = pw->pw_gid;
-  if (0 == gid || 0 == gr->gr_gid)
-    die ("GID for `%s' is 0, refusing to run SSL\n", user);
-  if (pw->pw_gid != gr->gr_gid)
+  gid = get_unpriv_gid (group);
+  if (pw->pw_gid != gid)
     die ("GID for `%s' is not `%s' as expected, refusing to run SSL\n",
          user, group);
-  if (0 != initgroups ( (const char *) user, gr->gr_gid))
+  if (0 != initgroups ( (const char *) user, gid))
     die ("Unable to initgroups for `%s' in group `%s' as expected\n",
          user, group);
 #ifdef HAVE_SETRESGID
@@ -184,6 +190,18 @@ drop_privs_to (const char *user, const char *group)
   if (0 != (setgid (gid) | setegid (gid)))
     die ("Failed to setgid: %s\n", strerror (errno));
 #endif
+  if (supp_groups)
+  {
+    for (num_supp = 0; supp_groups[num_supp]; num_supp++) ;
+    gid_t *supp_gids = (gid_t *) calloc (num_supp, sizeof (gid_t));
+    if (!supp_gids)
+      die ("Failed to allocate memory for supplementary GIDs\n");
+    for (i = 0; i < num_supp; i++)
+      supp_gids[i] = get_unpriv_gid (supp_groups[i]);
+    if (0 != setgroups (num_supp, supp_gids))
+      die ("Failed to setgroups: %s\n", strerror (errno));
+    free (supp_gids);
+  }
 #ifdef HAVE_SETRESUID
   if (0 != setresuid (uid, uid, uid))
     die ("Failed to setresuid: %s\n", strerror (errno));

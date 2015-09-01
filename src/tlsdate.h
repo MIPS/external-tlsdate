@@ -111,6 +111,7 @@ struct opts
 {
   const char *user;
   const char *group;
+  char *supp_groups;
   int max_tries;
   int min_steady_state_interval;
   int wait_between_tries;
