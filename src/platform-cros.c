@@ -533,6 +533,11 @@ platform_init_cros (struct state *state)
   /* Watch for per-service ProxyConfig property changes */
   struct event_base *base = state->base;
   struct dbus_state *dbus_state = state->dbus;
+  if (!dbus_state)
+    {
+      info ("[cros] DBus not connected, skipping platform initialization.");
+      return 0;
+    }
   struct source *src = NULL;
   int sources = 0;
   DBusConnection *conn = dbus_state->conn;
