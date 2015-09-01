@@ -79,6 +79,7 @@ include $(BUILD_NATIVE_TEST)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := tlsdated
+LOCAL_INIT_RC := init/tlsdated.rc
 LOCAL_REQUIRED_MODULES := tlsdated.rc
 LOCAL_SRC_FILES := $(tlsdate_tlsdated_sources)
 LOCAL_CFLAGS := -DTLSDATED_MAIN
@@ -95,20 +96,3 @@ LOCAL_SRC_FILES := \
 LOCAL_SHARED_LIBRARIES := $(tlsdate_common_shared_libs)
 $(eval $(tlsdate_common))
 include $(BUILD_NATIVE_TEST)
-
-
-ifdef INITRC_TEMPLATE
-include $(CLEAR_VARS)
-LOCAL_MODULE := tlsdated.rc
-LOCAL_MODULE_CLASS := ETC
-LOCAL_MODULE_PATH := $(PRODUCT_OUT)/$(TARGET_COPY_OUT_INITRCD)
-
-include $(BUILD_SYSTEM)/base_rules.mk
-
-.PHONY: $(LOCAL_BUILT_MODULE)
-$(LOCAL_BUILT_MODULE): my_args := \
-  -v -l -s -- /system/bin/tlsdate -v -C /system/etc/security/cacerts -l
-$(LOCAL_BUILT_MODULE): my_groups := inet
-$(LOCAL_BUILT_MODULE): $(INITRC_TEMPLATE)
-	$(call generate-initrc-file,tlsdated,$(my_args),$(my_groups))
-endif
