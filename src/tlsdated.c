@@ -227,21 +227,6 @@ parse_argv (struct opts *opts, int argc, char *argv[])
   /* Validate arguments */
 }
 
-static const char **
-parse_supp_groups (char *arg)
-{
-  size_t i;
-  char *scan;
-  const char **supp_groups;
-
-  for (i = 1, scan = arg; (scan = strchr (scan, ',')); i++, scan++) ;
-  supp_groups = (const char **) calloc (i + 1, sizeof (const char *));
-  if (!supp_groups)
-    die ("Failed to allocate memory for supplementary group names\n");
-  for (i = 0; (supp_groups[i] = strsep (&arg, ",")); i++) ;
-  return supp_groups;
-}
-
 static
 void add_source_to_conf (struct opts *opts, char *host, char *port, char *proxy)
 {
@@ -465,6 +450,21 @@ cleanup_main (struct state *state)
 }
 
 #ifdef TLSDATED_MAIN
+static const char **
+parse_supp_groups (char *arg)
+{
+  size_t i;
+  char *scan;
+  const char **supp_groups;
+
+  for (i = 1, scan = arg; (scan = strchr (scan, ',')); i++, scan++) ;
+  supp_groups = (const char **) calloc (i + 1, sizeof (const char *));
+  if (!supp_groups)
+    die ("Failed to allocate memory for supplementary group names\n");
+  for (i = 0; (supp_groups[i] = strsep (&arg, ",")); i++) ;
+  return supp_groups;
+}
+
 int API
 main (int argc, char *argv[], char *envp[])
 {
