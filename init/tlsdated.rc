@@ -1,0 +1,7 @@
+# Init file for starting tlsdated on Android.
+service tlsdated /system/bin/tlsdated -v -l -s -- /system/bin/tlsdate -v -C /system/etc/security/cacerts -l
+    class main
+    # This daemon needs to start as root and drops privileges early on.
+    user root
+    group system
+    seclabel u:r:brillo:s0
