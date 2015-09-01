@@ -246,10 +246,10 @@
 
 /* TODO(b/23651876) Reserve proper unprivileged uid/gid for the helper. */
 /* Unprivileged group */
-#define UNPRIV_GROUP "inet"
+#define UNPRIV_GROUP "nobody"
 
 /* Unprivileged user */
-#define UNPRIV_USER "inet"
+#define UNPRIV_USER "nobody"
 
 /* if PolarSSL is enabled */
 /* #undef USE_POLARSSL */
