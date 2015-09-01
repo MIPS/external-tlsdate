@@ -51,16 +51,30 @@ $(eval $(tlsdate_common))
 include $(BUILD_EXECUTABLE)
 
 
-#include $(CLEAR_VARS)
-#LOCAL_MODULE := tlsdate-helper
-#LOCAL_SRC_FILES := \
-#    src/proxy-bio.c \
-#    src/seccomp.c \
-#    src/tlsdate-helper.c \
-#    src/util.c
-#LOCAL_SHARED_LIBRARIES := libcrypto libevent
-#$(eval $(tlsdate_common))
-#include $(BUILD_EXECUTABLE)
+include $(CLEAR_VARS)
+LOCAL_MODULE := tlsdate-helper
+LOCAL_SRC_FILES := \
+    src/compat/clock-linux.c \
+    src/proxy-bio.c \
+    src/seccomp.c \
+    src/tlsdate-helper.c \
+    src/util.c
+LOCAL_SHARED_LIBRARIES := libcrypto libevent libssl
+$(eval $(tlsdate_common))
+include $(BUILD_EXECUTABLE)
+
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := tlsdate_proxy-bio_unittest
+LOCAL_SRC_FILES := \
+    src/proxy-bio-unittest.c \
+    src/proxy-bio.c \
+    src/seccomp.c \
+    src/test-bio.c \
+    src/util.c
+LOCAL_SHARED_LIBRARIES := $(tlsdate_common_shared_libs)
+$(eval $(tlsdate_common))
+include $(BUILD_NATIVE_TEST)
 
 
 include $(CLEAR_VARS)
