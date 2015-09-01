@@ -525,6 +525,7 @@ main (int argc, char *argv[], char *envp[])
   if (state.opts.supp_groups)
     supp_groups = parse_supp_groups (state.opts.supp_groups);
   drop_privs_to (state.opts.user, state.opts.group, supp_groups);
+  free (supp_groups);
   /* register a signal handler to save time at shutdown */
   if (state.opts.should_save_disk)
     {
@@ -624,7 +625,6 @@ main (int argc, char *argv[], char *envp[])
   event_base_dispatch (base);
   verb ("tlsdated event dispatch terminating gracefully");
 out:
-  free (supp_groups);
   return cleanup_main (&state);
 }
 #endif /* !TLSDATED_MAIN */
