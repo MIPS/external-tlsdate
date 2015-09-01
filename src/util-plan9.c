@@ -61,7 +61,7 @@ void API logat(int isverbose, const char *fmt, ...)
 
 
 void
-drop_privs_to (const char *user, const char *group)
+drop_privs_to (const char *user, const char *group, const char **supp_groups)
 {
 #if !_PLAN9_SOURCE
 
@@ -69,6 +69,10 @@ drop_privs_to (const char *user, const char *group)
   gid_t gid;
   struct passwd *pw;
   struct group  *gr;
+
+  /* TODO(garnold) Implement supplementary group support. */
+  if (supp_groups)
+    die ("Supplementary groups not supported\n");
 
   if (0 != getuid ())
     return; /* not running as root to begin with; should (!) be harmless to continue

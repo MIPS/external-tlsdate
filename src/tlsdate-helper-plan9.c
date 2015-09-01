@@ -1109,7 +1109,7 @@ main(int argc, char **argv)
   /* We are not going to set the clock, thus no need to stay root */
   if (0 == setclock && 0 == timewarp)
   {
-    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP);
+    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP, NULL);
   }
 /*
 	XXX: KILL ME
@@ -1171,7 +1171,7 @@ main(int argc, char **argv)
     die ("fork failed: %s\n", strerror (errno));
   if (0 == ssl_child)
   {
-    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP);
+    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP, NULL);
     run_ssl (time_map, leap);
     /*
     XXX: should be a pipe close

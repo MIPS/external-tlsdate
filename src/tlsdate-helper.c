@@ -1276,7 +1276,7 @@ main(int argc, char **argv)
   if (0 == setclock && 0 == timewarp)
   {
     verb ("V: attemping to drop administrator privileges");
-    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP);
+    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP, NULL);
   }
 
   // We cast the mmap value to remove this error when compiling with g++:
@@ -1337,7 +1337,7 @@ main(int argc, char **argv)
     die ("fork failed: %s", strerror (errno));
   if (0 == ssl_child)
   {
-    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP);
+    drop_privs_to (UNPRIV_USER, UNPRIV_GROUP, NULL);
     run_ssl (time_map, leap, http);
     (void) munmap (time_map, sizeof (uint32_t));
     _exit (0);

@@ -42,6 +42,8 @@
 #include "src/dbus.h"
 #include "src/platform.h"
 
+
+static const char kTlsdatedOpts[] = "hwrpt:d:T:D:c:a:lsvbm:j:f:x:Uu:g:G:";
 const char *kCacheDir = DEFAULT_DAEMON_CACHEDIR;
 
 int
@@ -102,6 +104,7 @@ usage (const char *progn)
   printf ("  -U        don't use DBus if supported\n");
   printf ("  -u <user> user to change to\n");
   printf ("  -g <grp>  group to change to\n");
+  printf ("  -G <grps> comma-separated list of supplementary groups\n");
   printf ("  -v        be verbose\n");
   printf ("  -b        use verbose debugging\n");
   printf ("  -x <h>    set proxy for subprocs to h\n");
@@ -117,6 +120,7 @@ set_conf_defaults (struct opts *opts)
   };
   opts->user = UNPRIV_USER;
   opts->group = UNPRIV_GROUP;
+  opts->supp_groups = NULL;
   opts->max_tries = MAX_TRIES;
   opts->min_steady_state_interval = STEADY_STATE_INTERVAL;
   opts->wait_between_tries = WAIT_BETWEEN_TRIES;
@@ -145,7 +149,7 @@ void
 parse_argv (struct opts *opts, int argc, char *argv[])
 {
   int opt;
-  while ((opt = getopt (argc, argv, "hwrpt:d:T:D:c:a:lsvbm:j:f:x:Uu:g:")) != -1)
+  while ((opt = getopt (argc, argv, kTlsdatedOpts)) != -1)
     {
       switch (opt)
         {
@@ -209,6 +213,9 @@ parse_argv (struct opts *opts, int argc, char *argv[])
         case 'g':
           opts->group = optarg;
           break;
+        case 'G':
+          opts->supp_groups = optarg;
+          break;
         case 'h':
         default:
           usage (argv[0]);
@@ -218,6 +225,21 @@ parse_argv (struct opts *opts, int argc, char *argv[])
   if (optind < argc)
     opts->base_argv = argv + optind;
   /* Validate arguments */
+}
+
+static const char **
+parse_supp_groups (char *arg)
+{
+  size_t i;
+  char *scan;
+  const char **supp_groups;
+
+  for (i = 1, scan = arg; (scan = strchr (scan, ',')); i++, scan++) ;
+  supp_groups = (const char **) calloc (i + 1, sizeof (const char *));
+  if (!supp_groups)
+    die ("Failed to allocate memory for supplementary group names\n");
+  for (i = 0; (supp_groups[i] = strsep (&arg, ",")); i++) ;
+  return supp_groups;
 }
 
 static
@@ -446,6 +468,8 @@ cleanup_main (struct state *state)
 int API
 main (int argc, char *argv[], char *envp[])
 {
+  const char **supp_groups = NULL;
+
   initalize_syslog ();
   struct state state;
   /* TODO(wad) EVENT_BASE_FLAG_PRECISE_TIMER | EVENT_BASE_FLAG_PRECISE_TIMER */
@@ -498,7 +522,9 @@ main (int argc, char *argv[], char *envp[])
       platform->rtc_close (&state.hwclock);
     }
   /* drop privileges before touching any untrusted data */
-  drop_privs_to (state.opts.user, state.opts.group);
+  if (state.opts.supp_groups)
+    supp_groups = parse_supp_groups (state.opts.supp_groups);
+  drop_privs_to (state.opts.user, state.opts.group, supp_groups);
   /* register a signal handler to save time at shutdown */
   if (state.opts.should_save_disk)
     {
@@ -598,6 +624,7 @@ main (int argc, char *argv[], char *envp[])
   event_base_dispatch (base);
   verb ("tlsdated event dispatch terminating gracefully");
 out:
+  free (supp_groups);
   return cleanup_main (&state);
 }
 #endif /* !TLSDATED_MAIN */
