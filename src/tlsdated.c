@@ -576,7 +576,7 @@ main (int argc, char *argv[], char *envp[])
       time_t disk_time = state.last_time;
       if (!load_disk_timestamp (state.timestamp_path, &disk_time))
         {
-          verb ("disk timestamp available: yes");
+          verb ("disk timestamp available: yes (%ld)", disk_time);
           if (!is_sane_time (state.last_time) ||
               state.last_time < disk_time)
             {
