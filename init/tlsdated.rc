@@ -1,5 +1,9 @@
 # Init file for starting tlsdated on Android.
-service tlsdated /system/bin/tlsdated -v -l -s -G dbus,inet -- /system/bin/tlsdate -v -C /system/etc/security/cacerts -l
+
+on boot
+    mkdir /data/misc/tlsdated 0755 root system
+
+service tlsdated /system/bin/tlsdated -v -c /data/misc/tlsdated -G dbus,inet -- /system/bin/tlsdate -v -C /system/etc/security/cacerts -l
     class main
     # This daemon needs to start as root and drops privileges early on.
     user root

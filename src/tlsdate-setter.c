@@ -13,6 +13,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/prctl.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -79,10 +80,12 @@ time_setter_coprocess (int time_fd, int notify_fd, struct state *state)
   prctl (PR_SET_NAME, "tlsdated-setter");
   if (state->opts.should_save_disk && !state->opts.dry_run)
     {
+      const mode_t perms = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
       /* TODO(wad) platform->file_open */
       if ( (save_fd = open (state->timestamp_path,
                             O_WRONLY | O_CREAT | O_NOFOLLOW | O_CLOEXEC,
-                            S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)) < 0)
+                            perms)) < 0 ||
+           fchmod (save_fd, perms) != 0)
         {
           /* Attempt to unlink the path on the way out. */
           unlink (state->timestamp_path);
