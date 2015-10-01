@@ -8,4 +8,3 @@ service tlsdated /system/bin/tlsdated -v -c /data/misc/tlsdated -G dbus,inet -- 
     # This daemon needs to start as root and drops privileges early on.
     user root
     group system
-    seclabel u:r:brillo:s0
