@@ -27,8 +27,8 @@
 
 /* Use a signal handler to emit violations when debugging */
 #ifdef SECCOMP_FILTER_DEBUG
-# undef SECCOMP_FILTER_FAIL
-# define SECCOMP_FILTER_FAIL SECCOMP_RET_TRAP
+#  undef SECCOMP_FILTER_FAIL
+#  define SECCOMP_FILTER_FAIL SECCOMP_RET_TRAP
 #endif /* SANDBOX_SECCOMP_FILTER_DEBUG */
 
 /* Simple helpers to avoid manual errors (but larger BPF programs). */
@@ -44,18 +44,24 @@
 #elif defined(__x86_64__)
 #  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_X86_64
 #elif defined(__arm__)
-# ifndef EM_ARM
-#   define EM_ARM 40
-# endif
+#  ifndef EM_ARM
+#    define EM_ARM 40
+#  endif
 #  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_ARM
 #elif defined(__aarch64__)
 #  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_AARCH64
 #elif defined(__mips__)
-# if defined(__LP64__)
-#  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS64
-# else
-#  define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS
-# endif
+#  if defined(__MIPSEL__)
+#    if defined(__LP64__)
+#      define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS64EL
+#    else
+#      define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPSEL
+#    endif
+#  elif defined(__LP64__)
+#    define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS64
+#  else
+#    define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS
+#  endif
 #else
 #  error "Platform does not support seccomp filter yet"
 #endif
