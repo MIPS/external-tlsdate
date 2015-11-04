@@ -39,7 +39,7 @@ tlsdate_common_shared_libs := libcrypto libdbus libevent
 define tlsdate_common
   LOCAL_CFLAGS += \
       -DWITH_EVENTS -DHAVE_DBUS -DHAVE_CROS -DHAVE_PV_UIO \
-      -DRECENT_COMPILE_DATE=$(shell date +%sL) \
+      -DRECENT_COMPILE_DATE=$$$(BUILD_DATETIME_FROM_FILE)L \
       -DTARGET_OS_LINUX -Wall -Werror -Wno-unused-parameter
 endef
 
