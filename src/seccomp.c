@@ -53,7 +53,7 @@
 #elif defined(__mips__)
 #  if defined(__MIPSEL__)
 #    if defined(__LP64__)
-#      define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPS64EL
+#      define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPSEL64
 #    else
 #      define SECCOMP_AUDIT_ARCH AUDIT_ARCH_MIPSEL
 #    endif
